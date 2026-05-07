@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es" class="legal-page">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#143b39" />
+    <meta
+      name="description"
+      content="Envia feedback de la beta de HoySi: errores, fricciones, dudas o recomendaciones."
+    />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="launch.css" />
+    <title>HoySi Beta | Enviar feedback</title>
+  </head>
+  <body>
+    <div class="launch-bg launch-a"></div>
+    <div class="launch-bg launch-b"></div>
+
+    <header class="launch-header">
+      <a class="brand" href="/">HoySi</a>
+      <nav class="launch-nav">
+        <a href="/launch.html#beta">Beta</a>
+        <a href="tester-guide.html">Guia tester</a>
+        <a href="/">Abrir app</a>
+        <a href="privacy.html">Privacidad</a>
+      </nav>
+    </header>
+
+    <main class="launch-main">
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
+          <p class="launch-eyebrow">Feedback de beta</p>
+          <h2>Lo que mas nos ayuda ahora es feedback concreto.</h2>
+          <p>
+            Si algo te confundio, se rompio, te parecio pesado o te alivio de verdad, cuentanoslo
+            aqui. Eso vale mucho mas que una opinion generica.
+          </p>
+        </div>
+
+        <form class="waitlist-form beta-form-grid" id="feedback-form">
+          <label class="waitlist-field">
+            <span>Nombre opcional</span>
+            <input name="name" type="text" maxlength="60" placeholder="Ej. Mari" />
+          </label>
+          <label class="waitlist-field">
+            <span>Correo opcional</span>
+            <input name="email" type="email" maxlength="160" placeholder="tu@correo.com" />
+          </label>
+          <label class="waitlist-field">
+            <span>Que parte fue</span>
+            <select name="area">
+              <option value="general">General</option>
+              <option value="home">Hoy</option>
+              <option value="flow">Flujo</option>
+              <option value="receivables">Cobros</option>
+              <option value="protected">Pagos</option>
+              <option value="insights">IA / Lumi</option>
+              <option value="onboarding">Onboarding</option>
+              <option value="settings">Configuracion</option>
+            </select>
+          </label>
+          <label class="waitlist-field">
+            <span>Que tan grave fue</span>
+            <select name="severity">
+              <option value="baja">Baja</option>
+              <option value="media" selected>Media</option>
+              <option value="alta">Alta</option>
+            </select>
+          </label>
+          <label class="waitlist-field full-span">
+            <span>Que paso o que no entendiste</span>
+            <textarea
+              name="message"
+              rows="5"
+              maxlength="600"
+              placeholder="Ej. Quise salir del modal y me quede atrapada. O no entendi que significaba usable"
+              required
+            ></textarea>
+          </label>
+          <label class="waitlist-field full-span">
+            <span>Que te habria ayudado</span>
+            <textarea
+              name="suggestion"
+              rows="4"
+              maxlength="420"
+              placeholder="Ej. Un texto mas corto, un boton distinto, otra palabra, menos pasos..."
+            ></textarea>
+          </label>
+          <label class="waitlist-field full-span">
+            <span>Dispositivo opcional</span>
+            <input name="device" type="text" maxlength="80" placeholder="Ej. Android Samsung A15" />
+          </label>
+          <button class="launch-button primary" type="submit">Enviar feedback</button>
+        </form>
+        <p class="waitlist-feedback" id="feedback-status"></p>
+      </section>
+    </main>
+
+    <footer class="launch-footer">
+      <div>
+        <strong>HoySi Beta</strong>
+        <p>Gracias por ayudarnos a pulir el producto antes del lanzamiento real.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/launch.html#beta">Volver a beta</a>
+        <a href="tester-guide.html">Guia tester</a>
+        <a href="privacy.html">Privacidad</a>
+      </div>
+    </footer>
+
+    <script src="feedback.js" defer></script>
+  </body>
+</html>

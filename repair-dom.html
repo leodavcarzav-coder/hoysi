@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="es"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reparando HoySi</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        font-family: "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top right, rgba(255, 123, 74, 0.18), transparent 26%),
+          radial-gradient(circle at bottom left, rgba(23, 125, 105, 0.14), transparent 24%),
+          linear-gradient(180deg, #fbf6f0 0%, #f6efe6 100%);
+        color: #173331;
+      }
+
+      .card {
+        width: min(100%, 420px);
+        padding: 28px 24px;
+        border-radius: 28px;
+        background: rgba(255, 252, 248, 0.92);
+        box-shadow: 0 18px 40px rgba(22, 59, 57, 0.12);
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: 2rem;
+      }
+
+      p {
+        margin: 0;
+        line-height: 1.5;
+        color: #60726d;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Reparando HoySi</h1>
+      <p>Estoy limpiando cache, service worker y datos viejos para que la app vuelva a abrir bien.</p>
+    </main>
+
+    <script>
+      (async function () {
+        try {
+          if ("serviceWorker" in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map((registration) => registration.unregister()));
+          }
+
+          if ("caches" in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map((key) => caches.delete(key)));
+          }
+
+          ["hoysi-state-v1", "hoysi-state-v2", "hoysi-state-v3"].forEach((key) => {
+            localStorage.removeItem(key);
+          });
+        } catch (error) {
+          console.error(error);
+        }
+
+        window.location.replace("/?fresh=1");
+      })();
+    </script>
+  
+
+</body></html>

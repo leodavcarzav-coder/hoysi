@@ -1,0 +1,13 @@
+data/launch-store.json
+node_modules/
+.env
+server.err.log
+server.out.log
+.edge*/
+*.png
+!final-mobile-home-v7.png
+!final-mobile-ia-v7.png
+after-fix-dom.html
+ai-dom-check.html
+demo-dom.html
+fresh-dom.html

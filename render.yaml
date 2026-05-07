@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: hoysi-beta
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: APP_BASE_URL
+        sync: false
+      - key: CONTACT_EMAIL
+        value: hola@hoysi.app
+      - key: BETA_STAGE
+        value: open
+      - key: OPENAI_MODEL
+        value: gpt-5-mini
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_MONTHLY
+        sync: false
+      - key: STRIPE_PRICE_YEARLY
+        sync: false
+    disk:
+      name: hoysi-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
