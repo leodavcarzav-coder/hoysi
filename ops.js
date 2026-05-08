@@ -9,6 +9,7 @@ const waitlistList = document.getElementById("waitlist-list");
 const queryToken = new URLSearchParams(window.location.search).get("token") || "";
 const savedToken = window.localStorage.getItem("hoysi-ops-token") || "";
 let activeToken = queryToken || savedToken;
+let autoLoadTimer = 0;
 
 if (opsTokenInput) {
   opsTokenInput.value = activeToken;
@@ -17,19 +18,48 @@ if (opsTokenInput) {
 if (opsAccessForm) {
   opsAccessForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    activeToken = String(opsTokenInput?.value || "").trim();
-    if (activeToken) {
-      window.localStorage.setItem("hoysi-ops-token", activeToken);
-    } else {
-      window.localStorage.removeItem("hoysi-ops-token");
-    }
-    loadOpsData();
+    syncTokenFromInput({ shouldLoad: true, force: true });
   });
 }
 
-loadOpsData();
+if (opsTokenInput) {
+  opsTokenInput.addEventListener("input", () => {
+    window.clearTimeout(autoLoadTimer);
+    autoLoadTimer = window.setTimeout(() => {
+      syncTokenFromInput({ shouldLoad: true });
+    }, 260);
+  });
 
-async function loadOpsData() {
+  window.setTimeout(() => {
+    syncTokenFromInput({ shouldLoad: true });
+  }, 180);
+}
+
+loadOpsData({ force: true });
+
+function syncTokenFromInput({ shouldLoad = false, force = false } = {}) {
+  const nextToken = String(opsTokenInput?.value || "").trim();
+  const changed = nextToken !== activeToken;
+  activeToken = nextToken;
+
+  if (activeToken) {
+    window.localStorage.setItem("hoysi-ops-token", activeToken);
+  } else {
+    window.localStorage.removeItem("hoysi-ops-token");
+  }
+
+  syncUrlToken(activeToken);
+
+  if (shouldLoad && (changed || force)) {
+    loadOpsData({ force: true });
+  }
+}
+
+async function loadOpsData({ force = false } = {}) {
+  if (!activeToken && !force) {
+    return;
+  }
+
   setOpsStatus("Cargando panel...");
 
   try {
@@ -62,6 +92,16 @@ function buildOpsUrl() {
     url.searchParams.set("token", activeToken);
   }
   return url.toString();
+}
+
+function syncUrlToken(token) {
+  const url = new URL(window.location.href);
+  if (token) {
+    url.searchParams.set("token", token);
+  } else {
+    url.searchParams.delete("token");
+  }
+  window.history.replaceState({}, "", url.toString());
 }
 
 function renderSummary(summary) {
