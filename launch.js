@@ -35,19 +35,24 @@ let publicConfig = {
   },
 };
 
+const ACQUISITION_SOURCE_KEY = "hoysi-beta-source";
+const urlParams = new URLSearchParams(window.location.search);
 const waitlistForm = document.getElementById("waitlist-form");
 const waitlistFeedback = document.getElementById("waitlist-feedback");
 const previewTabs = Array.from(document.querySelectorAll("[data-preview-key]"));
 const previewShots = Array.from(document.querySelectorAll("[data-preview-panel]"));
+const trackedLinks = Array.from(document.querySelectorAll("[data-track-link]"));
 const supportsHover = window.matchMedia("(hover: hover)").matches;
 
 let activePreview = "home";
+let acquisitionSource = resolveAcquisitionSource();
 
 initLaunch();
 
 async function initLaunch() {
   await loadPublicConfig();
   hydrateLaunchMeta();
+  hydrateTrackedLinks();
   wireWaitlistForm();
   wirePreviewTabs();
   activatePreview(activePreview);
@@ -112,7 +117,7 @@ function wireWaitlistForm() {
     const formData = new FormData(waitlistForm);
     const payload = {
       email: String(formData.get("email") || "").trim(),
-      source: "launch-beta-minimal",
+      source: acquisitionSource || "launch-direct",
       intent: "updates",
     };
 
@@ -156,6 +161,19 @@ function wireWaitlistForm() {
         submitButton.textContent = originalText;
       }
     }
+  });
+}
+
+function hydrateTrackedLinks() {
+  trackedLinks.forEach((link) => {
+    const kind = link.dataset.trackLink;
+    const href = link.getAttribute("href") || "/";
+    if (!kind) {
+      return;
+    }
+
+    const fallbackSource = kind === "feedback" ? "beta-feedback" : "beta-landing";
+    link.href = appendSourceToPath(href, acquisitionSource || fallbackSource);
   });
 }
 
@@ -214,4 +232,29 @@ function setText(id, value) {
   }
 
   node.textContent = value;
+}
+
+function resolveAcquisitionSource() {
+  const querySource = normalizeSource(urlParams.get("source"));
+  const savedSource = normalizeSource(window.localStorage.getItem(ACQUISITION_SOURCE_KEY));
+  const nextSource = querySource || savedSource || "launch-direct";
+  window.localStorage.setItem(ACQUISITION_SOURCE_KEY, nextSource);
+  return nextSource;
+}
+
+function normalizeSource(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-_]/g, "")
+    .slice(0, 40);
+}
+
+function appendSourceToPath(path, source) {
+  const [basePath, hashPart = ""] = String(path || "/").split("#");
+  const url = new URL(basePath || "/", window.location.origin);
+  if (source) {
+    url.searchParams.set("source", source);
+  }
+  return `${url.pathname}${url.search}${hashPart ? `#${hashPart}` : ""}`;
 }

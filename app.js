@@ -26,6 +26,8 @@ const SALES_EMAIL = "hola@hoysi.app";
 const LAUNCH_PAGE_PATH = "/launch.html#beta";
 const FEEDBACK_PAGE_PATH = "/feedback.html";
 const TESTER_GUIDE_PATH = "/tester-guide.html";
+const ACQUISITION_SOURCE_KEY = "hoysi-beta-source";
+const ACQUISITION_SOURCE = captureAcquisitionSource();
 
 const KINDS = {
   income: {
@@ -1499,7 +1501,7 @@ async function submitAiQuestion(promptText) {
       body: JSON.stringify({
         prompt: promptText,
         financeContext: buildAiFinanceContext(data),
-        source: "in-app-lab",
+        source: ACQUISITION_SOURCE ? `lab-${ACQUISITION_SOURCE}` : "in-app-lab",
       }),
     });
 
@@ -4032,24 +4034,57 @@ function startFreeTrial() {
 }
 
 function openLaunchPage() {
-  const popup = window.open(LAUNCH_PAGE_PATH, "_blank", "noopener");
+  const targetPath = withTrackedPath(LAUNCH_PAGE_PATH, ACQUISITION_SOURCE || "in-app");
+  const popup = window.open(targetPath, "_blank", "noopener");
   if (!popup) {
-    window.location.href = LAUNCH_PAGE_PATH;
+    window.location.href = targetPath;
   }
 }
 
 function openFeedbackPage() {
-  const popup = window.open(FEEDBACK_PAGE_PATH, "_blank", "noopener");
+  const targetPath = withTrackedPath(FEEDBACK_PAGE_PATH, ACQUISITION_SOURCE || "in-app");
+  const popup = window.open(targetPath, "_blank", "noopener");
   if (!popup) {
-    window.location.href = FEEDBACK_PAGE_PATH;
+    window.location.href = targetPath;
   }
 }
 
 function openTesterGuide() {
-  const popup = window.open(TESTER_GUIDE_PATH, "_blank", "noopener");
+  const targetPath = withTrackedPath(TESTER_GUIDE_PATH, ACQUISITION_SOURCE || "in-app");
+  const popup = window.open(targetPath, "_blank", "noopener");
   if (!popup) {
-    window.location.href = TESTER_GUIDE_PATH;
+    window.location.href = targetPath;
   }
+}
+
+function captureAcquisitionSource() {
+  const querySource = normalizeSourceTag(launchParams.get("source"));
+  const savedSource = normalizeSourceTag(localStorage.getItem(ACQUISITION_SOURCE_KEY));
+  const nextSource = querySource || savedSource || "";
+  if (nextSource) {
+    localStorage.setItem(ACQUISITION_SOURCE_KEY, nextSource);
+  }
+  return nextSource;
+}
+
+function normalizeSourceTag(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-_]/g, "")
+    .slice(0, 40);
+}
+
+function withTrackedPath(path, fallbackSource) {
+  const source = normalizeSourceTag(fallbackSource);
+  if (!source) {
+    return path;
+  }
+
+  const [basePath, hashPart = ""] = String(path || "/").split("#");
+  const url = new URL(basePath || "/", window.location.origin);
+  url.searchParams.set("source", source);
+  return `${url.pathname}${url.search}${hashPart ? `#${hashPart}` : ""}`;
 }
 
 function loadState() {

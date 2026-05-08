@@ -1,28 +1,63 @@
 # HoySi Beta Outreach Copy
 
-## WhatsApp corto
+Actualizado: 8 de mayo de 2026
 
-`Estoy armando la beta oficial de una app llamada HoySi. Ayuda a personas con ingresos variables a saber cuanto si pueden usar hoy, que pagos no tocar y que cobros mover primero. Si vendes, cobras por partes o mezclas plata de casa y negocio, te puede servir. Si quieres probarla y mandarme feedback real, te paso el link.`
+## Regla base
 
-## WhatsApp mas directo
+No pedir `prueba mi app por favor`.
 
-`No estoy buscando likes, estoy buscando testers reales. Si vives con plata por partes, ventas por WhatsApp o cobros pendientes, quiero que pruebes una app que estamos puliendo. La idea es que me digas que sirve, que no entiendes y donde se rompe.`
+Pedir esto:
+- abre la app
+- usala con tu realidad
+- dime que no entendiste o que le agregarias
 
-## Estado de WhatsApp
+## Links listos por canal
 
-`Busco testers para app nueva: si tu plata no entra igual todos los dias, quiero que la pruebes y me des feedback.`
+- WhatsApp:
+  - `https://hoysi.onrender.com/launch.html?source=whatsapp`
+- Reddit alpha:
+  - `https://hoysi.onrender.com/launch.html?source=reddit-alpha`
+- Reddit TestMyApp:
+  - `https://hoysi.onrender.com/launch.html?source=reddit-testmyapp`
+- Indie Hackers:
+  - `https://hoysi.onrender.com/launch.html?source=indiehackers`
+- Founder feedback:
+  - `https://hoysi.onrender.com/launch.html?source=founder-feedback`
 
-## DM para microcreadores
+## Variante 1: WhatsApp directo
 
-`Hola. Estoy validando una app financiera simple para gente con ingresos variables, ventas por WhatsApp y pagos mezclados entre casa y negocio. No estamos lanzando en grande todavia; estamos armando una beta oficial controlada con testers reales. Si te interesa probarla o compartirla con tu comunidad, te paso la landing beta.`
+`Estoy probando una app llamada HoySi para gente a la que la plata le entra por partes. Si vendes por WhatsApp, cobras a ratos o mezclas casa y negocio, quiero que la abras 5 minutos con tu realidad y me digas que no entendiste o que te faltaria.`
 
-## Texto para historia o post
+## Variante 2: Reddit builder/testing
 
-`Si alguna vez sentiste que si entra plata, pero igual no sabes cuanto puedes gastar hoy, esto te puede interesar. Estoy probando una app llamada HoySi y busco testers reales para pulirla antes del lanzamiento.`
+`Busco testers reales para una beta mobile-first llamada HoySi. Esta pensada para personas con ingresos variables, ventas por WhatsApp y pagos mezclados entre casa y negocio. No necesito “amor al proyecto”; necesito 5 minutos de uso real y 1 comentario concreto sobre onboarding, usable, cobros o pagos.`
 
-## CTA recomendados
+## Variante 3: Founder feedback
 
-- `Quiero entrar a la beta`
-- `Muestrame la demo`
-- `Te doy feedback`
-- `Pruebala conmigo`
+`Estoy validando un flujo financiero simple para personas con ingresos variables y busco feedback de posicionamiento, distribucion y claridad de propuesta. No busco usuarios masivos todavia; busco builders o founders que puedan decirme si el mensaje, el canal y el recorrido hacen sentido.`
+
+## Follow-up corto
+
+### Si hizo clic pero no respondio
+
+`Te escribo corto: si alcanzaste a abrir HoySi, lo que mas me sirve no es “me gusto”, sino si te quedo clara la parte de cuanto si puedes usar hoy, cobros o pagos apartados.`
+
+### Si entro pero no mando feedback
+
+`Si ya la viste, dime solo una de estas tres: que no entendiste, que le agregarias, o que parte si te daria alivio en la vida real.`
+
+## Checklist minimo para cada tester
+
+- Hacer onboarding.
+- Registrar 1 ingreso.
+- Registrar 1 salida.
+- Registrar 1 cobro pendiente o 1 pago apartado.
+- Mandar 1 feedback.
+
+## Lo que no decir
+
+- `Estoy buscando caridad`
+- `Solo prueba y me ayudas`
+- `Es como un banco`
+- `Es para todo el mundo`
+- `Estamos listisimos`

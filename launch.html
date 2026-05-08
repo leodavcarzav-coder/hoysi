@@ -27,10 +27,10 @@
       <nav class="launch-nav">
         <a href="#vista">Como se ve</a>
         <a href="#feedback-loop">Que comentar</a>
-        <a href="feedback.html">Feedback</a>
+        <a data-track-link="feedback" href="feedback.html">Feedback</a>
         <a href="privacy.html">Privacidad</a>
       </nav>
-      <a class="launch-button ghost" href="/">Abrir app</a>
+      <a class="launch-button ghost" data-track-link="app" href="/">Abrir app</a>
     </header>
 
     <main class="launch-main">
@@ -44,9 +44,9 @@
             agregarias.
           </p>
           <div class="hero-actions">
-            <a class="launch-button primary" href="/">Abrir la app</a>
-            <a class="launch-button" href="/?demo=1">Ver demo</a>
-            <a class="launch-button ghost" href="feedback.html">Enviar feedback</a>
+            <a class="launch-button primary" data-track-link="app" href="/">Abrir la app</a>
+            <a class="launch-button" data-track-link="demo" href="/?demo=1">Ver demo</a>
+            <a class="launch-button ghost" data-track-link="feedback" href="feedback.html">Enviar feedback</a>
           </div>
           <p class="hero-inline-meta">
             <span id="beta-stage-inline">Beta abierta</span>
@@ -139,8 +139,8 @@
           <li>Que te dio calma o te ahorro un error.</li>
         </ul>
         <div class="hero-actions compact-actions">
-          <a class="launch-button primary" href="feedback.html">Abrir feedback</a>
-          <a class="launch-button" href="/">Seguir probando la app</a>
+          <a class="launch-button primary" data-track-link="feedback" href="feedback.html">Abrir feedback</a>
+          <a class="launch-button" data-track-link="app" href="/">Seguir probando la app</a>
         </div>
         <p class="section-note">
           Si se la vas a compartir a alguien, mejor que sea a personas que cobran por partes, venden
@@ -155,17 +155,17 @@
         <p>Entra, usala y luego cuentanos que falta para que de verdad te ayude.</p>
       </div>
       <div class="footer-links">
-        <a href="/">Abrir app</a>
-        <a href="/?demo=1">Ver demo</a>
-        <a href="feedback.html">Enviar feedback</a>
+        <a data-track-link="app" href="/">Abrir app</a>
+        <a data-track-link="demo" href="/?demo=1">Ver demo</a>
+        <a data-track-link="feedback" href="feedback.html">Enviar feedback</a>
         <a href="privacy.html">Privacidad</a>
         <a href="terms.html">Terminos</a>
       </div>
     </footer>
 
     <div class="sticky-cta">
-      <a class="launch-button primary" href="/">Abrir app</a>
-      <a class="launch-button" href="feedback.html">Feedback</a>
+      <a class="launch-button primary" data-track-link="app" href="/">Abrir app</a>
+      <a class="launch-button" data-track-link="feedback" href="feedback.html">Feedback</a>
     </div>
 
     <script src="launch.js" defer></script>

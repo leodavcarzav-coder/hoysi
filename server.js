@@ -749,6 +749,18 @@ function buildOpsPayload(store) {
       lumiQuestions: store.lumiQuestions.length,
       checkouts: store.checkouts.length,
     },
+    sourceBreakdown: buildSourceBreakdown(store),
+    testerApplications: store.testerApplications.slice(0, 80).map((entry) => ({
+      id: entry.id,
+      name: entry.name || "",
+      email: entry.email || "",
+      whatsapp: entry.whatsapp || "",
+      profile: entry.profile || "",
+      biggestPain: entry.biggestPain || "",
+      status: entry.status || "new",
+      source: entry.source || "",
+      updatedAt: entry.updatedAt || entry.createdAt || "",
+    })),
     feedbackEntries: store.feedbackEntries.slice(0, 80).map((entry) => ({
       id: entry.id,
       area: entry.area || "general",
@@ -777,6 +789,43 @@ function buildOpsPayload(store) {
       updatedAt: entry.updatedAt || entry.createdAt || "",
     })),
   };
+}
+
+function buildSourceBreakdown(store) {
+  const counters = new Map();
+
+  const register = (type, source) => {
+    const normalizedSource = String(source || "direct").trim() || "direct";
+    if (!counters.has(normalizedSource)) {
+      counters.set(normalizedSource, {
+        source: normalizedSource,
+        waitlist: 0,
+        testers: 0,
+        feedback: 0,
+        questions: 0,
+        total: 0,
+      });
+    }
+
+    const bucket = counters.get(normalizedSource);
+    if (type === "waitlist") {
+      bucket.waitlist += 1;
+    } else if (type === "testers") {
+      bucket.testers += 1;
+    } else if (type === "feedback") {
+      bucket.feedback += 1;
+    } else if (type === "questions") {
+      bucket.questions += 1;
+    }
+    bucket.total += 1;
+  };
+
+  store.waitlist.forEach((entry) => register("waitlist", entry.source));
+  store.testerApplications.forEach((entry) => register("testers", entry.source));
+  store.feedbackEntries.forEach((entry) => register("feedback", entry.source));
+  store.lumiQuestions.forEach((entry) => register("questions", entry.source));
+
+  return Array.from(counters.values()).sort((a, b) => b.total - a.total || a.source.localeCompare(b.source));
 }
 
 function buildReleaseState(baseUrl) {

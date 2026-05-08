@@ -53,6 +53,7 @@ npm start
 - La guia de prueba vive en `/tester-guide.html`
 - El formulario guarda leads y feedback en `data/launch-store.json`
 - El panel operativo para leer feedback queda en `/ops.html`
+- El panel operativo incluye links por `?source=` y un tablero local de seguimiento
 
 ## Leer feedback
 
@@ -60,6 +61,10 @@ npm start
 - En Render publico, configura `OPS_TOKEN` y luego abre:
   - `https://tu-app.onrender.com/ops.html?token=TU_TOKEN`
 - Si prefieres verlo crudo, todo sigue guardado en `data/launch-store.json`
+- El panel ya trae:
+  - resumen por fuente
+  - links listos para WhatsApp, Reddit e Indie Hackers
+  - tablero manual exportable a CSV
 
 ## Laboratorio de preguntas
 
@@ -91,6 +96,9 @@ Si quieres verlo en tu celular dentro de la misma red Wi-Fi, usa la URL local qu
 - `launch.html` y `launch.css`: pagina de venta lista para demo y captacion
 - `launch.js`: CTA de cobro y waitlist
 - `launch-playbook.md`: mensaje, oferta, hooks, canales y KPIs
+- `beta-week-1-operations.md`: runbook diario para la ronda de 7 dias
+- `beta-outreach-copy.md`: mensajes congelados por canal
+- `data/beta-operations-board-template.csv`: plantilla del tablero operativo
 - `legal-checklist.md`: base operativa para salir sin improvisar
 - `deploy-render.md`: paso a paso para publicarla
 

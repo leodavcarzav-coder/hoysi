@@ -656,6 +656,120 @@ img {
   gap: 12px;
 }
 
+.ops-link-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.ops-link-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 18px 20px;
+  border: 1px solid var(--launch-line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.ops-link-card p,
+.ops-link-card code {
+  margin: 8px 0 0;
+  color: var(--launch-soft);
+  line-height: 1.6;
+}
+
+.ops-link-card code {
+  display: inline-block;
+  word-break: break-all;
+}
+
+.ops-checklist {
+  margin-top: 18px;
+}
+
+.ops-metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-top: 12px;
+  color: var(--launch-soft);
+}
+
+.ops-board-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.ops-board-form input,
+.ops-board-form select {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 14px;
+  border: 1px solid var(--launch-line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  font: inherit;
+  color: var(--launch-ink);
+}
+
+.ops-board-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.ops-board-table-wrap {
+  margin-top: 18px;
+  overflow-x: auto;
+  border: 1px solid var(--launch-line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.ops-board-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+}
+
+.ops-board-table th,
+.ops-board-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(24, 53, 51, 0.08);
+}
+
+.ops-board-table th {
+  font-size: 0.86rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--launch-soft);
+}
+
+.ops-board-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.ops-board-empty {
+  color: var(--launch-soft);
+}
+
+.ops-delete-button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--launch-line);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--launch-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
 .ai-lab-note {
   margin-top: 12px;
 }
@@ -663,7 +777,8 @@ img {
 @media (max-width: 960px) {
   .hero-section,
   .beta-form-grid,
-  .ops-summary-grid {
+  .ops-summary-grid,
+  .ops-board-form {
     grid-template-columns: 1fr;
   }
 
@@ -695,6 +810,10 @@ img {
     padding: 14px 16px;
     flex: 0 0 auto;
     scroll-snap-align: start;
+  }
+
+  .ops-link-card {
+    grid-template-columns: 1fr;
   }
 }
 

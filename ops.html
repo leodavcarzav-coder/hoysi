@@ -49,6 +49,103 @@
 
       <section class="section-shell legal-shell">
         <div class="section-copy">
+          <p class="launch-eyebrow">Semana 1</p>
+          <h2>Links listos y prueba minima</h2>
+          <p>
+            Usa una sola landing, cambia solo la fuente y pide el mismo recorrido minimo para poder
+            comparar canales sin mezclar senales.
+          </p>
+        </div>
+        <div class="ops-link-grid" id="channel-links"></div>
+        <ul class="prompt-list compact-list ops-checklist">
+          <li>Onboarding con su realidad.</li>
+          <li>1 ingreso y 1 salida.</li>
+          <li>1 cobro o 1 pago apartado.</li>
+          <li>1 feedback concreto despues de usarla.</li>
+        </ul>
+      </section>
+
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
+          <p class="launch-eyebrow">Canales</p>
+          <h2>Resumen por fuente</h2>
+          <p>Esto te dice que canal trae correos, testers, feedback o puro ruido.</p>
+        </div>
+        <div class="ops-entry-list" id="source-breakdown"></div>
+      </section>
+
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
+          <p class="launch-eyebrow">Tablero</p>
+          <h2>Seguimiento operativo</h2>
+          <p>
+            Este tablero manual es el lugar para decidir a quien seguirle escribiendo y a quien no.
+          </p>
+        </div>
+        <form class="ops-board-form" id="ops-board-form">
+          <input name="name" type="text" maxlength="80" placeholder="Nombre" required />
+          <input name="channel" type="text" maxlength="60" placeholder="Canal" required />
+          <input name="profile" type="text" maxlength="120" placeholder="Perfil" required />
+          <input name="firstContactAt" type="date" />
+          <select name="status">
+            <option value="nuevo">nuevo</option>
+            <option value="contactado">contactado</option>
+            <option value="entro">entro</option>
+            <option value="activo">activo</option>
+            <option value="mando feedback">mando feedback</option>
+            <option value="descartado">descartado</option>
+          </select>
+          <select name="entered">
+            <option value="pendiente">entro/no entro</option>
+            <option value="entro">entro</option>
+            <option value="no entro">no entro</option>
+          </select>
+          <select name="sentFeedback">
+            <option value="pendiente">mando feedback</option>
+            <option value="si">si</option>
+            <option value="no">no</option>
+          </select>
+          <select name="quality">
+            <option value="alta">calidad alta</option>
+            <option value="media">calidad media</option>
+            <option value="baja">calidad baja</option>
+          </select>
+          <button class="launch-button primary" type="submit">Agregar fila</button>
+        </form>
+        <div class="ops-board-actions">
+          <button class="launch-button" id="ops-export-board" type="button">Exportar CSV</button>
+          <button class="launch-button ghost" id="ops-seed-board" type="button">Cargar ejemplos</button>
+        </div>
+        <div class="ops-board-table-wrap">
+          <table class="ops-board-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Canal</th>
+                <th>Perfil</th>
+                <th>Estado</th>
+                <th>Primer contacto</th>
+                <th>Entro/no entro</th>
+                <th>Mando feedback</th>
+                <th>Calidad</th>
+                <th>Accion</th>
+              </tr>
+            </thead>
+            <tbody id="ops-board-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
+          <p class="launch-eyebrow">Testers</p>
+          <h2>Interes real detectado</h2>
+        </div>
+        <div class="ops-entry-list" id="tester-list"></div>
+      </section>
+
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
           <p class="launch-eyebrow">Feedback</p>
           <h2>Comentarios concretos</h2>
         </div>
