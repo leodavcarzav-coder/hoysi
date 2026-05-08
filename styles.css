@@ -1331,6 +1331,41 @@ html.theme-dark .coach-topic-chip {
   margin-top: 16px;
 }
 
+.feedback-nudge-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(255, 123, 74, 0.18);
+  background:
+    linear-gradient(135deg, rgba(255, 123, 74, 0.14), rgba(255, 252, 247, 0.92) 54%),
+    rgba(255, 255, 255, 0.88);
+}
+
+.feedback-nudge-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.feedback-nudge-copy p,
+.feedback-nudge-footer p {
+  margin: 0;
+}
+
+.feedback-nudge-footer {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+}
+
+.feedback-nudge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.feedback-nudge-actions .mini-button {
+  flex: 1 1 160px;
+}
+
 .chart-date-grid {
   display: grid;
   gap: 14px;

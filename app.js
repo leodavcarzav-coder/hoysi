@@ -1728,6 +1728,7 @@ function renderHome(data) {
   const primaryTask = data.topTasks[0] || null;
   const reminders = buildHomeReminders(data);
   const membershipStrip = renderMembershipStrip(data.membership);
+  const feedbackNudge = renderFeedbackNudgeCard();
 
   return `
     <div class="stack home-stack">
@@ -1777,6 +1778,8 @@ function renderHome(data) {
         </div>
       </section>
 
+      ${feedbackNudge}
+
       <section class="glass-card reminder-shell" id="home-reminders">
         <div class="section-head">
           <div>
@@ -1789,6 +1792,41 @@ function renderHome(data) {
         </div>
       </section>
     </div>
+  `;
+}
+
+function renderFeedbackNudgeCard() {
+  const totalTouches =
+    state.transactions.length +
+    state.receivables.length +
+    state.protectedItems.length +
+    state.goals.length;
+  const readyForFeedback = totalTouches >= 2;
+  const title = readyForFeedback
+    ? "Ya tienes contexto para dejarnos una nota util"
+    : "Prueba dos movimientos y cuentanos que te falta";
+  const copy = readyForFeedback
+    ? "Ya probaste lo suficiente para decirnos algo valioso. Queremos una sola cosa concreta: que te confundio, que si te dio calma o que le agregarias y por que."
+    : "Haz una prueba corta con tu caso real: registra 1 ingreso y 1 salida o 1 cobro. Apenas lo hagas, dejanos una nota corta para seguir afinandola hoy.";
+  const meterCopy = readyForFeedback
+    ? "Listo para feedback"
+    : `${Math.max(0, 2 - totalTouches)} toque(s) mas y ya nos sirve tu feedback`;
+
+  return `
+    <section class="glass-card feedback-nudge-card" id="home-feedback-nudge">
+      <div class="feedback-nudge-copy">
+        <p class="eyebrow">Feedback rapido</p>
+        <h3 class="card-title">${title}</h3>
+        <p class="helper">${copy}</p>
+      </div>
+      <div class="feedback-nudge-footer">
+        <span class="health-badge ${readyForFeedback ? "tone-success" : "tone-warning"}">${meterCopy}</span>
+        <div class="list-actions feedback-nudge-actions">
+          <button class="mini-button primary" data-action="open-feedback" type="button">Dejar feedback</button>
+          <button class="mini-button" data-action="open-tester-guide" type="button">Que comentar</button>
+        </div>
+      </div>
+    </section>
   `;
 }
 
