@@ -13,6 +13,7 @@ const STORE_FILE = path.join(DATA_DIR, "launch-store.json");
 const APP_BASE_URL = normalizeBaseUrl(process.env.APP_BASE_URL || process.env.RENDER_EXTERNAL_URL || "");
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "hola@hoysi.app";
 const BETA_STAGE = normalizeBetaStage(process.env.BETA_STAGE || "open");
+const OPS_TOKEN = process.env.OPS_TOKEN || "";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5-mini";
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
@@ -60,6 +61,11 @@ const server = http.createServer(async (request, response) => {
       return;
     }
 
+    if (request.method === "GET" && requestUrl.pathname === "/api/ops/feedback") {
+      await handleOpsFeedback(request, requestUrl, response);
+      return;
+    }
+
     if (request.method === "POST" && requestUrl.pathname === "/api/lumi-chat") {
       await handleLumiChat(request, response);
       return;
@@ -68,7 +74,7 @@ const server = http.createServer(async (request, response) => {
     if (request.method === "GET" && requestUrl.pathname === "/api/lumi-status") {
       writeJson(response, 200, {
         ok: true,
-        mode: OPENAI_API_KEY ? "openai" : "local-fallback",
+        mode: OPENAI_API_KEY ? "openai" : "question-lab",
         model: OPENAI_MODEL,
       });
       return;
@@ -129,15 +135,43 @@ async function handleLumiChat(request, response) {
     return;
   }
 
+  const store = await readStore();
+  const entry = {
+    id: uid("lumiq"),
+    prompt: safeLongText(prompt, "").slice(0, 600),
+    source: safeShortText(body?.source, "in-app-question").slice(0, 40),
+    mode: OPENAI_API_KEY ? "openai" : "question-lab",
+    status: OPENAI_API_KEY ? "processing" : "queued-for-review",
+    financeSnapshot: summarizeFinanceContext(financeContext),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  store.lumiQuestions.unshift(entry);
+  store.lumiQuestions = store.lumiQuestions.slice(0, 5000);
+  await writeStore(store);
+
   if (!OPENAI_API_KEY) {
     writeJson(response, 503, {
-      error: "Lumi real todavia no tiene una API key configurada en el servidor.",
+      error: "Lumi esta en fase de prueba. Tu pregunta ya quedo guardada y por ahora te respondemos con apoyo beta.",
     });
     return;
   }
 
-  const lumiReply = await askOpenAI(prompt, financeContext);
-  writeJson(response, 200, lumiReply);
+  try {
+    const lumiReply = await askOpenAI(prompt, financeContext);
+    entry.status = "answered";
+    entry.answerTitle = safeShortText(lumiReply?.title, "").slice(0, 120);
+    entry.answerBody = safeLongText(lumiReply?.body, "").slice(0, 600);
+    entry.updatedAt = new Date().toISOString();
+    await writeStore(store);
+    writeJson(response, 200, lumiReply);
+  } catch (error) {
+    entry.status = "error";
+    entry.error = safeShortText(error?.message, "No pude responder.").slice(0, 180);
+    entry.updatedAt = new Date().toISOString();
+    await writeStore(store);
+    throw error;
+  }
 }
 
 async function handleWaitlist(request, response) {
@@ -275,6 +309,19 @@ async function handleFeedback(request, response) {
     ok: true,
     message: "Gracias. Tu feedback ya quedo guardado para revisar esta beta.",
   });
+}
+
+async function handleOpsFeedback(request, requestUrl, response) {
+  if (!canReadOps(request, requestUrl)) {
+    writeJson(response, 403, {
+      error:
+        "Este panel requiere acceso autorizado. Si la app esta publica, configura OPS_TOKEN y abre /ops.html?token=TU_TOKEN.",
+    });
+    return;
+  }
+
+  const store = await readStore();
+  writeJson(response, 200, buildOpsPayload(store));
 }
 
 async function handleBillingCheckout(request, response) {
@@ -529,6 +576,7 @@ async function readStore() {
       waitlist: Array.isArray(parsed.waitlist) ? parsed.waitlist : [],
       testerApplications: Array.isArray(parsed.testerApplications) ? parsed.testerApplications : [],
       feedbackEntries: Array.isArray(parsed.feedbackEntries) ? parsed.feedbackEntries : [],
+      lumiQuestions: Array.isArray(parsed.lumiQuestions) ? parsed.lumiQuestions : [],
       checkouts: Array.isArray(parsed.checkouts) ? parsed.checkouts : [],
     };
   } catch (error) {
@@ -536,6 +584,7 @@ async function readStore() {
       waitlist: [],
       testerApplications: [],
       feedbackEntries: [],
+      lumiQuestions: [],
       checkouts: [],
     };
   }
@@ -548,6 +597,7 @@ async function writeStore(store) {
       waitlist: Array.isArray(store.waitlist) ? store.waitlist : [],
       testerApplications: Array.isArray(store.testerApplications) ? store.testerApplications : [],
       feedbackEntries: Array.isArray(store.feedbackEntries) ? store.feedbackEntries : [],
+      lumiQuestions: Array.isArray(store.lumiQuestions) ? store.lumiQuestions : [],
       checkouts: Array.isArray(store.checkouts) ? store.checkouts : [],
     },
     null,
@@ -563,7 +613,7 @@ async function ensureStoreFile() {
   } catch (error) {
     await fsp.writeFile(
       STORE_FILE,
-      JSON.stringify({ waitlist: [], testerApplications: [], feedbackEntries: [], checkouts: [] }, null, 2),
+      JSON.stringify({ waitlist: [], testerApplications: [], feedbackEntries: [], lumiQuestions: [], checkouts: [] }, null, 2),
       "utf8",
     );
   }
@@ -591,7 +641,7 @@ function buildPublicConfig(request) {
     },
     release: buildReleaseState(baseUrl),
     lumi: {
-      mode: OPENAI_API_KEY ? "openai" : "local-fallback",
+      mode: OPENAI_API_KEY ? "openai" : "question-lab",
       model: OPENAI_MODEL,
     },
   };
@@ -619,7 +669,7 @@ async function buildReadiness(request) {
   }
 
   if (!OPENAI_API_KEY) {
-    warnings.push("Lumi seguira en modo fallback local hasta configurar OPENAI_API_KEY.");
+    warnings.push("Las preguntas de Lumi se estan guardando en laboratorio beta hasta configurar OPENAI_API_KEY.");
   }
 
   if (!billingEnabled()) {
@@ -639,7 +689,7 @@ async function buildReadiness(request) {
     capabilities: {
       applicationsOpen: betaApplicationsOpen(),
       billingEnabled: billingEnabled(),
-      lumiMode: OPENAI_API_KEY ? "openai" : "local-fallback",
+      lumiMode: OPENAI_API_KEY ? "openai" : "question-lab",
     },
   };
 }
@@ -677,6 +727,56 @@ function resolveBaseUrl(request) {
   const protocol = typeof forwardedProto === "string" && forwardedProto ? forwardedProto.split(",")[0] : "http";
   const host = request.headers.host || `127.0.0.1:${PORT}`;
   return normalizeBaseUrl(`${protocol}://${host}`);
+}
+
+function canReadOps(request, requestUrl) {
+  if (OPS_TOKEN) {
+    const headerToken = String(request.headers["x-ops-token"] || "").trim();
+    const queryToken = String(requestUrl.searchParams.get("token") || "").trim();
+    return headerToken === OPS_TOKEN || queryToken === OPS_TOKEN;
+  }
+
+  return !isPublicBaseUrl(resolveBaseUrl(request));
+}
+
+function buildOpsPayload(store) {
+  return {
+    ok: true,
+    summary: {
+      waitlist: store.waitlist.length,
+      testerApplications: store.testerApplications.length,
+      feedbackEntries: store.feedbackEntries.length,
+      lumiQuestions: store.lumiQuestions.length,
+      checkouts: store.checkouts.length,
+    },
+    feedbackEntries: store.feedbackEntries.slice(0, 80).map((entry) => ({
+      id: entry.id,
+      area: entry.area || "general",
+      email: entry.email || "",
+      message: entry.message || "",
+      suggestion: entry.suggestion || "",
+      source: entry.source || "",
+      createdAt: entry.createdAt || "",
+    })),
+    lumiQuestions: store.lumiQuestions.slice(0, 80).map((entry) => ({
+      id: entry.id,
+      prompt: entry.prompt || "",
+      mode: entry.mode || "question-lab",
+      status: entry.status || "queued-for-review",
+      source: entry.source || "",
+      answerTitle: entry.answerTitle || "",
+      answerBody: entry.answerBody || "",
+      error: entry.error || "",
+      createdAt: entry.createdAt || "",
+    })),
+    waitlist: store.waitlist.slice(0, 80).map((entry) => ({
+      id: entry.id,
+      email: entry.email || "",
+      source: entry.source || "",
+      intent: entry.intent || "",
+      updatedAt: entry.updatedAt || entry.createdAt || "",
+    })),
+  };
 }
 
 function buildReleaseState(baseUrl) {
@@ -820,6 +920,37 @@ function normalizeBaseUrl(value) {
   return url ? url.replace(/\/+$/, "") : "";
 }
 
+function summarizeFinanceContext(value) {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  const snapshot = {};
+  const availableToday = Number(value.availableToday);
+  const pendingReceivablesTotal = Number(value.pendingReceivablesTotal);
+  const protectedReserve = Number(value.protectedReserve);
+  const savingsTotal = Number(value.savingsTotal);
+
+  if (Number.isFinite(availableToday)) {
+    snapshot.availableToday = roundMoneyValue(availableToday);
+  }
+  if (Number.isFinite(pendingReceivablesTotal)) {
+    snapshot.pendingReceivablesTotal = roundMoneyValue(pendingReceivablesTotal);
+  }
+  if (Number.isFinite(protectedReserve)) {
+    snapshot.protectedReserve = roundMoneyValue(protectedReserve);
+  }
+  if (Number.isFinite(savingsTotal)) {
+    snapshot.savingsTotal = roundMoneyValue(savingsTotal);
+  }
+
+  return snapshot;
+}
+
+function roundMoneyValue(value) {
+  return Math.round(Number(value || 0) * 100) / 100;
+}
+
 function billingEnabled() {
   return Boolean(STRIPE_SECRET_KEY && STRIPE_PRICE_MONTHLY && STRIPE_PRICE_YEARLY);
 }
@@ -899,7 +1030,7 @@ server.listen(PORT, HOST, () => {
   console.log(`Beta: ${betaStageLabel(BETA_STAGE)}`);
   console.log(`Beta publica: ${isPublicBaseUrl(APP_BASE_URL) ? "lista para compartir" : "pendiente de URL publica o dominio final"}`);
   console.log(`Checkout: ${billingEnabled() ? "activo si Stripe esta bien configurado" : "pendiente de llaves Stripe"}`);
-  console.log(`Lumi IA: ${OPENAI_API_KEY ? `activa con ${OPENAI_MODEL}` : "modo fallback local"}`);
+  console.log(`Lumi IA: ${OPENAI_API_KEY ? `activa con ${OPENAI_MODEL}` : "laboratorio de preguntas"}`);
 
   if (networkUrls.length) {
     console.log("Tambien disponible en:");

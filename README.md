@@ -10,7 +10,7 @@ App mobile-first de un copiloto financiero para ingresos inestables.
 - Pagos protegidos con reserva automatica segun cercania
 - Cobros pendientes con recordatorio por WhatsApp
 - Ahorros y metas simples con progreso visible
-- Agente IA contextual con tips accionables
+- Laboratorio de preguntas contextual con captura de dudas reales
 - Graficas semanales, mensuales y anuales con rango configurable
 - Personalizacion de saludo, animaciones y vibracion
 - Plan `HoySi Pro` con prueba gratis de 7 dias
@@ -52,10 +52,18 @@ npm start
 - La landing de testers vive en `/launch.html`
 - La guia de prueba vive en `/tester-guide.html`
 - El formulario guarda leads y feedback en `data/launch-store.json`
+- El panel operativo para leer feedback queda en `/ops.html`
 
-## Lumi con IA real
+## Leer feedback
 
-Si quieres que `Lumi` responda con una IA real y no solo con fallback local, exporta una API key antes de levantar el servidor:
+- En local, abre `http://127.0.0.1:4173/ops.html`
+- En Render publico, configura `OPS_TOKEN` y luego abre:
+  - `https://tu-app.onrender.com/ops.html?token=TU_TOKEN`
+- Si prefieres verlo crudo, todo sigue guardado en `data/launch-store.json`
+
+## Laboratorio de preguntas
+
+Si quieres que el laboratorio de preguntas responda con una IA real y no solo en modo beta, exporta una API key antes de levantar el servidor:
 
 ```powershell
 $env:OPENAI_API_KEY="tu_api_key"
@@ -63,7 +71,7 @@ $env:OPENAI_MODEL="gpt-5-mini"
 C:\Users\HP\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe server.js
 ```
 
-Sin esa variable, la app sigue funcionando y `Lumi` responde con fallback local.
+Sin esa variable, la app sigue funcionando, guarda las preguntas en `launch-store.json` y responde en modo beta.
 
 Luego entra a:
 

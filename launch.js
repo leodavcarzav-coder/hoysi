@@ -6,8 +6,8 @@ const previews = [
   },
   {
     key: "lumi",
-    title: "Lumi",
-    body: "Una capa simple para preguntar con tus palabras y aterrizar decisiones sin pena.",
+    title: "Preguntas beta",
+    body: "Una capa en prueba para dejar preguntas reales y entender como deberia responder la futura IA.",
   },
   {
     key: "protect",
@@ -30,7 +30,7 @@ let publicConfig = {
     stageLabel: "Beta abierta",
   },
   lumi: {
-    mode: "local-fallback",
+    mode: "question-lab",
     model: "gpt-5-mini",
   },
 };
@@ -89,7 +89,7 @@ function hydrateLaunchMeta() {
   setText("beta-stage-inline", publicConfig.release.stageLabel || "Beta abierta");
   setText(
     "beta-lumi-inline",
-    publicConfig.lumi.mode === "openai" ? "Lumi con IA real" : "Lumi en beta",
+    publicConfig.lumi.mode === "openai" ? "Preguntas con IA real" : "Preguntas en prueba",
   );
 
   const contactEmail = publicConfig.contactEmail || "hola@hoysi.app";

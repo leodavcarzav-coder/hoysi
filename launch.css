@@ -546,10 +546,85 @@ img {
   padding-left: 18px;
 }
 
+.ops-access-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.ops-access-row input {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 16px;
+  border: 1px solid var(--launch-line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  font: inherit;
+  color: var(--launch-ink);
+}
+
+.ops-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.ops-summary-card,
+.ops-entry-card {
+  border: 1px solid var(--launch-line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.ops-summary-card {
+  padding: 18px;
+}
+
+.ops-summary-card span,
+.ops-inline-meta,
+.ops-empty {
+  color: var(--launch-soft);
+}
+
+.ops-summary-card strong {
+  display: block;
+  margin-top: 8px;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.8rem;
+}
+
+.ops-entry-list {
+  display: grid;
+  gap: 12px;
+}
+
+.ops-entry-card {
+  padding: 18px 20px;
+}
+
+.ops-entry-card p {
+  margin: 10px 0 0;
+  line-height: 1.6;
+}
+
+.ops-entry-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ai-lab-note {
+  margin-top: 12px;
+}
+
 @media (max-width: 960px) {
   .hero-section,
   .preview-tabs,
-  .beta-form-grid {
+  .beta-form-grid,
+  .ops-summary-grid {
     grid-template-columns: 1fr;
   }
 
@@ -582,6 +657,10 @@ img {
   }
 
   .inline-email-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ops-access-row {
     grid-template-columns: 1fr;
   }
 

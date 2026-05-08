@@ -17,7 +17,7 @@ const CHART_MODES = ["week", "month", "year"];
 const TOUR_MODES = ["quick", "full"];
 const INSTALL_LABEL = "Instalar";
 const INSTALL_ENABLED = false;
-const AGENT_NAME = "Lumi";
+const AGENT_NAME = "Lumi Lab";
 const PRO_TRIAL_DAYS = 7;
 const PRO_MONTHLY_PRICE = 2.99;
 const PRO_YEARLY_PRICE = 24.99;
@@ -125,8 +125,8 @@ const QUICK_TOUR_STEPS = [
     body: "En Flujo ves graficas, ruta de 14 dias y escenarios para anticiparte antes de quedarte corta.",
   },
   {
-    title: "Lumi te explica sin pena",
-    body: "En IA puedes preguntar por terminos, pedir tips o contar tu problema con tus propias palabras.",
+    title: "El laboratorio recoge preguntas reales",
+    body: "En Lab puedes dejar dudas, pedir tips o contar tu problema con tus propias palabras mientras afinamos la futura IA.",
   },
 ];
 
@@ -150,7 +150,7 @@ const FULL_TOUR_STEPS = [
     selector: "#home-reminders",
     title: "Aqui la app te refresca la memoria",
     body: "Aqui veras que conviene atender primero: cobros, pagos o ahorro.",
-    note: "Si no hay urgencias, Lumi te deja recomendaciones simples.",
+    note: "Si no hay urgencias, el laboratorio te deja recomendaciones simples para seguir probando.",
   },
   {
     view: "flow",
@@ -176,8 +176,8 @@ const FULL_TOUR_STEPS = [
   {
     view: "insights",
     selector: "#ai-panel",
-    title: "Lumi es tu apoyo para dudas y decisiones",
-    body: "Aqui le preguntas a Lumi dudas reales: terminos, cobros, ahorro o que mover primero.",
+    title: "El laboratorio de preguntas esta en prueba",
+    body: "Aqui puedes dejar preguntas reales: terminos, cobros, ahorro o que mover primero. Las guardamos para entrenar respuestas mejores.",
     note: "Habla como hablas normalmente. No hace falta escribir tecnico.",
   },
   {
@@ -1469,7 +1469,7 @@ function handleAiSubmit(event) {
   const promptText = String(formData.get("question") || "").trim();
 
   if (!promptText) {
-    showToast("Escribe tu duda y Lumi te responde claro.");
+    showToast("Escribe tu duda y la guardamos en el laboratorio.");
     return;
   }
 
@@ -1477,22 +1477,7 @@ function handleAiSubmit(event) {
 }
 
 async function submitAiQuestion(promptText) {
-  const membership = syncMembershipState();
-  if (!membership.canAskAi) {
-    aiDraft = promptText;
-    aiPending = false;
-    aiError = "";
-    aiExchange = buildAiUpgradeReply(promptText, membership);
-    assistantTopic = "overview";
-    render();
-    showToast(membership.trialAvailable ? "Activa tu prueba para seguir con Lumi." : "Lumi lite ya llego a su limite.");
-    return;
-  }
-
-  if (!membership.hasUnlimitedAi) {
-    consumeAiQuestionQuota();
-  }
-
+  syncMembershipState();
   const data = computeDashboardState();
   aiDraft = promptText;
   aiPending = true;
@@ -1514,12 +1499,13 @@ async function submitAiQuestion(promptText) {
       body: JSON.stringify({
         prompt: promptText,
         financeContext: buildAiFinanceContext(data),
+        source: "in-app-lab",
       }),
     });
 
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(payload?.error || "No pude conectar a Lumi.");
+      throw new Error(payload?.error || "No pude conectar el laboratorio.");
     }
 
     aiExchange = {
@@ -1532,7 +1518,7 @@ async function submitAiQuestion(promptText) {
     };
     assistantTopic = payload.topicId || guessAiTopicFromPrompt(promptText);
   } catch (error) {
-    aiError = error?.message || "Lumi no pudo responder en este momento.";
+    aiError = error?.message || "El laboratorio no pudo responder en este momento.";
     const fallback = buildAiReply(promptText, data);
     aiExchange = {
       ...fallback,
@@ -1758,7 +1744,7 @@ function renderHome(data) {
               ? `<button class="mini-button primary" data-action="${primaryTask.action}"${primaryTask.kind ? ` data-kind="${primaryTask.kind}"` : ""}${primaryTask.target ? ` data-target="${primaryTask.target}"` : ""} type="button">${escapeHtml(primaryTask.cta)}</button>`
               : `<button class="mini-button primary" data-action="go-view" data-target="flow" type="button">Ver mi flujo</button>`
           }
-          <button class="mini-button" data-action="go-view" data-target="insights" type="button">Hablar con ${AGENT_NAME}</button>
+          <button class="mini-button" data-action="go-view" data-target="insights" type="button">Abrir laboratorio</button>
         </div>
         <div class="hero-meta">
           <span class="chip light">Apartado ${formatMoney(data.protectedReserve)}</span>
@@ -1785,7 +1771,7 @@ function renderHome(data) {
         <div class="list-actions action-island-links">
           <button class="mini-button" data-action="open-sheet" data-kind="saving" type="button">Apartar ahorro</button>
           <button class="mini-button" data-action="go-view" data-target="flow" type="button">Ver flujo</button>
-          <button class="mini-button" data-action="go-view" data-target="insights" type="button">Preguntar a ${AGENT_NAME}</button>
+          <button class="mini-button" data-action="go-view" data-target="insights" type="button">Ir a preguntas beta</button>
         </div>
       </section>
 
@@ -1815,7 +1801,7 @@ function renderMembershipStrip(membership) {
         <div>
           <p class="eyebrow">Beta activa</p>
           <h3 class="card-title">Te quedan ${membership.trialDaysLeft} dia(s) para probar la version completa</h3>
-          <p class="helper">Aprovecha esta beta para probar Lumi, flujo ampliado y contarnos que te confunde o que te sirve.</p>
+          <p class="helper">Aprovecha esta beta para probar el laboratorio de preguntas, flujo ampliado y contarnos que te confunde o que te sirve.</p>
         </div>
         <div class="list-actions">
           <button class="mini-button primary" data-action="open-feedback" type="button">Enviar feedback</button>
@@ -1865,7 +1851,7 @@ function renderPlanStatusCard(membership) {
         ? "Acceso ampliado activo"
         : "Base activa";
   const copy = membership.trialActive
-    ? "Ahora mismo puedes probar la capa completa: Lumi sin limite, flujo ampliado, fechas libres y respaldos."
+    ? "Ahora mismo puedes probar la capa completa: laboratorio de preguntas, flujo ampliado, fechas libres y respaldos."
     : membership.trialAvailable
       ? `Tu base diaria sigue gratis. Si quieres ayudarnos a probar lo mas avanzado, activa ${PRO_TRIAL_DAYS} dias de beta ampliada y mandanos feedback real.`
       : "Sigues con usable, cobros y pagos en la base gratis. Si quieres seguir ayudandonos, puedes volver por la landing beta o dejarnos feedback.";
@@ -1879,7 +1865,7 @@ function renderPlanStatusCard(membership) {
       <p class="helper">${copy}</p>
       <div class="plan-feature-grid">
         <span class="chip light">Feedback directo</span>
-        <span class="chip light">Lumi con mas uso</span>
+        <span class="chip light">Preguntas laboratorio</span>
         <span class="chip light">Flujo mensual y anual</span>
         <span class="chip light">Respaldos y fechas libres</span>
       </div>
@@ -1924,16 +1910,16 @@ function renderAiQuotaHint(membership) {
   if (membership.hasUnlimitedAi) {
     return `
       <div class="ai-plan-hint ai-plan-live">
-        <strong>Lumi beta ampliada</strong>
-        <p>Tienes preguntas libres durante ${membership.trialActive ? `los proximos ${membership.trialDaysLeft} dia(s)` : "tu acceso activo"}.</p>
+        <strong>Laboratorio ampliado</strong>
+        <p>Tus preguntas quedan habilitadas y se siguen guardando mientras dura ${membership.trialActive ? `esta beta de ${membership.trialDaysLeft} dia(s)` : "tu acceso activo"}.</p>
       </div>
     `;
   }
 
   return `
     <div class="ai-plan-hint">
-      <strong>Lumi beta</strong>
-      <p>Te quedan ${membership.aiRemaining} de ${FREE_AI_WEEKLY_LIMIT} preguntas en esta ventana de 7 dias.${membership.aiRemaining === 0 ? " Cuando se reinicie vuelves a preguntar, o activas la beta ampliada para seguir probando." : ""}</p>
+      <strong>Laboratorio de preguntas</strong>
+      <p>Esta parte sigue en prueba. Tus preguntas se guardan para entrenar respuestas mas utiles y la ayuda puede variar mientras afinamos la IA.</p>
     </div>
   `;
 }
@@ -2088,7 +2074,7 @@ function renderTour() {
         </div>
         <p class="tour-guide-copy">${escapeHtml(step.body)}</p>
         <div class="tour-guide-note">
-          <strong>Tip de Lumi</strong>
+          <strong>Tip del lab</strong>
           <p>${escapeHtml(step.note || "")}</p>
         </div>
         <div class="setup-actions">
@@ -2603,9 +2589,9 @@ function renderInsights(data) {
             ${renderMascot()}
           </div>
           <div class="ai-hero-copy">
-            <p class="eyebrow coach-eyebrow">Asistente financiero con IA</p>
-            <h3 class="card-title">${AGENT_NAME}, tu apoyo financiero diario</h3>
-            <p class="coach-copy">Estoy aqui para ayudarte con dudas de plata, cobros, pagos, ahorro y terminos raros usando palabras simples y acciones concretas.</p>
+            <p class="eyebrow coach-eyebrow">Laboratorio de preguntas</p>
+            <h3 class="card-title">${AGENT_NAME}, en fase de prueba</h3>
+            <p class="coach-copy">Esta capa sigue en construccion. Puedes dejar dudas reales de plata, cobros, pagos, ahorro o terminos raros, y tus preguntas nos ayudan a entrenar respuestas mas rapidas y utiles.</p>
           </div>
         </div>
 
@@ -2639,6 +2625,7 @@ function renderInsights(data) {
         <div class="coach-tip-list">
           ${(reply.tips || []).map(renderCoachTip).join("")}
         </div>
+        ${aiError ? `<p class="helper ai-lab-note">${escapeHtml(aiError)}</p>` : ""}
         <div class="list-actions coach-actions">
           ${renderCoachActionButton(reply.primaryAction || coach.primaryAction)}
           ${renderCoachActionButton(reply.secondaryAction || coach.secondaryAction)}
@@ -2646,10 +2633,10 @@ function renderInsights(data) {
         <form class="ai-form" id="ai-form">
           ${aiQuotaHint}
           <label class="field ai-question-field">
-            <span>Preguntale lo que quieras</span>
+            <span>Deja una pregunta real</span>
             <textarea name="question" rows="3" placeholder="Ej. No me alcanza esta semana, que deberia mover primero?">${escapeHtml(aiDraft)}</textarea>
           </label>
-          <button class="primary-button" type="submit"${aiPending ? " disabled" : ""}>${aiPending ? "Lumi pensando..." : `Preguntar a ${AGENT_NAME}`}</button>
+          <button class="primary-button" type="submit"${aiPending ? " disabled" : ""}>${aiPending ? "Guardando pregunta..." : "Probar pregunta"}</button>
         </form>
 
         <div class="ai-suggestion-block">
@@ -4004,17 +3991,17 @@ function consumeAiQuestionQuota() {
 
 function buildAiUpgradeReply(promptText, membership) {
   const body = membership.trialAvailable
-    ? `Te sigo ayudando en modo base, pero Lumi deja ${FREE_AI_WEEKLY_LIMIT} preguntas por cada 7 dias. Si quieres probarlo mas a fondo, activa la beta ampliada por ${PRO_TRIAL_DAYS} dias.`
-    : `La parte base de Lumi ya uso sus ${FREE_AI_WEEKLY_LIMIT} preguntas de esta ventana. ${membership.aiResetCopy} Si quieres seguir ayudandonos hoy, activa la beta ampliada o dejanos feedback.`;
+    ? `Esta capa sigue en laboratorio. Puedes seguir dejando preguntas mientras afinamos la futura IA y, si quieres probar el resto de funciones ampliadas, activa ${PRO_TRIAL_DAYS} dias de beta ampliada.`
+    : `El laboratorio sigue abierto para preguntas. ${membership.aiResetCopy} Si quieres seguir ayudandonos hoy, activa la beta ampliada o dejanos feedback.`;
 
   return {
     prompt: promptText,
-    title: membership.trialAvailable ? "Lumi base ya te mostro lo principal" : "Lumi base ya llego a su limite",
+    title: membership.trialAvailable ? "Laboratorio en prueba" : "Laboratorio abierto",
     body,
     tips: [
       "La base diaria de usable, cobros y pagos sigue funcionando gratis.",
-      "La beta ampliada te deja probar preguntas libres, flujo ampliado y respaldos.",
-      membership.trialAvailable ? "La prueba es corta: 7 dias, suficiente para detectar que te sirve y que te confunde." : "Si ya topaste el limite, el mejor siguiente paso es dejar feedback concreto.",
+      "Tus preguntas nos sirven para entrenar respuestas mas utiles y mas rapidas.",
+      membership.trialAvailable ? "La prueba es corta: 7 dias, suficiente para detectar que te sirve y que te confunde." : "Si algo te confundio, el mejor siguiente paso es dejar feedback concreto.",
     ],
     primaryAction: membership.trialAvailable
       ? { label: "Activar beta ampliada", action: "start-trial" }

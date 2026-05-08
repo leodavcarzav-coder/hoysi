@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es" class="legal-page">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#143b39" />
+    <meta name="description" content="Panel operativo para revisar feedback, correos y preguntas beta de HoySi." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="launch.css" />
+    <title>HoySi | Panel beta</title>
+  </head>
+  <body>
+    <div class="launch-bg launch-a"></div>
+    <div class="launch-bg launch-b"></div>
+
+    <header class="launch-header">
+      <a class="brand" href="/">HoySi</a>
+      <nav class="launch-nav">
+        <a href="/launch.html">Beta</a>
+        <a href="/feedback.html">Feedback</a>
+      </nav>
+    </header>
+
+    <main class="launch-main">
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
+          <p class="launch-eyebrow">Panel beta</p>
+          <h2>Asi lees lo que ya entro</h2>
+          <p>
+            Aqui puedes revisar feedback, correos guardados y preguntas del laboratorio. Si en
+            produccion configuras <code>OPS_TOKEN</code>, entra con <code>?token=...</code>.
+          </p>
+        </div>
+
+        <form class="ops-access-row" id="ops-access-form">
+          <input id="ops-token-input" name="token" type="text" placeholder="OPS token si aplica" />
+          <button class="launch-button" type="submit">Cargar panel</button>
+        </form>
+        <p class="waitlist-feedback" id="ops-status"></p>
+
+        <div class="ops-summary-grid" id="ops-summary"></div>
+      </section>
+
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
+          <p class="launch-eyebrow">Feedback</p>
+          <h2>Comentarios concretos</h2>
+        </div>
+        <div class="ops-entry-list" id="feedback-list"></div>
+      </section>
+
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
+          <p class="launch-eyebrow">Preguntas beta</p>
+          <h2>Lo que nos dejan para entrenar el laboratorio</h2>
+        </div>
+        <div class="ops-entry-list" id="lumi-list"></div>
+      </section>
+
+      <section class="section-shell legal-shell">
+        <div class="section-copy">
+          <p class="launch-eyebrow">Correos</p>
+          <h2>Gente interesada</h2>
+        </div>
+        <div class="ops-entry-list" id="waitlist-list"></div>
+      </section>
+    </main>
+
+    <script src="ops.js" defer></script>
+  </body>
+</html>
