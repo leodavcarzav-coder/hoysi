@@ -662,6 +662,13 @@ img {
   margin-top: 18px;
 }
 
+.ops-campaign-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
 .ops-link-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -683,6 +690,39 @@ img {
 .ops-link-card code {
   display: inline-block;
   word-break: break-all;
+}
+
+.ops-campaign-card,
+.share-box {
+  border: 1px solid var(--launch-line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.ops-campaign-card {
+  padding: 18px 20px;
+}
+
+.ops-campaign-card p {
+  margin: 10px 0 0;
+  line-height: 1.6;
+}
+
+.ops-campaign-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.share-box {
+  padding: 20px;
+}
+
+.share-box p {
+  margin: 0;
+  color: var(--launch-soft);
+  line-height: 1.7;
 }
 
 .ops-checklist {
@@ -778,7 +818,8 @@ img {
   .hero-section,
   .beta-form-grid,
   .ops-summary-grid,
-  .ops-board-form {
+  .ops-board-form,
+  .ops-campaign-grid {
     grid-template-columns: 1fr;
   }
 

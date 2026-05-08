@@ -8,6 +8,7 @@ const waitlistList = document.getElementById("waitlist-list");
 const testerList = document.getElementById("tester-list");
 const sourceBreakdownList = document.getElementById("source-breakdown");
 const channelLinks = document.getElementById("channel-links");
+const campaignKit = document.getElementById("campaign-kit");
 const opsBoardForm = document.getElementById("ops-board-form");
 const opsBoardBody = document.getElementById("ops-board-body");
 const opsExportBoardButton = document.getElementById("ops-export-board");
@@ -17,6 +18,52 @@ const BOARD_STORAGE_KEY = "hoysi-beta-board-v1";
 const OPS_TOKEN_STORAGE_KEY = "hoysi-ops-token";
 const queryToken = new URLSearchParams(window.location.search).get("token") || "";
 const savedToken = window.localStorage.getItem(OPS_TOKEN_STORAGE_KEY) || "";
+const CAMPAIGN_CONFIG = [
+  {
+    label: "WhatsApp directo",
+    source: "whatsapp",
+    channel: "Canal principal",
+    duration: "2 a 5 min",
+    body:
+      "Estoy probando una app llamada HoySi para gente a la que la plata le entra por partes. Si vendes por WhatsApp, cobras a ratos o mezclas casa y negocio, abre esto 5 minutos con tu realidad y dime que no entendiste o que le agregarias: {link}",
+  },
+  {
+    label: "Reddit alpha",
+    source: "reddit-alpha",
+    channel: "Builders y testers",
+    duration: "5 min",
+    title: "Looking for real testers for a mobile-first beta for variable-income users in LatAm",
+    body:
+      "I am testing a mobile-first beta called HoySi for people whose money comes in parts: WhatsApp sellers, independent workers, and anyone mixing home and business cash. I do not need generic praise. I need 5 minutes of real use and 1 concrete comment about onboarding, daily usable money, receivables, or protected payments. If that profile fits you or someone close to you, start here: {link}",
+  },
+  {
+    label: "Reddit TestMyApp",
+    source: "reddit-testmyapp",
+    channel: "Feedback rapido",
+    duration: "5 min",
+    title: "Can you test a money app for users with variable income and give 1 concrete usability note?",
+    body:
+      "I am looking for a small group of testers for HoySi, a beta focused on people who get paid in parts and need to know what they can safely use today. Best fit: WhatsApp sellers, freelancers, side-income users, or people mixing home and business money. I only ask for 5 minutes of real use plus 1 concrete note on what felt confusing, heavy, or missing: {link}",
+  },
+  {
+    label: "Reddit SideProject",
+    source: "reddit-sideproject",
+    channel: "Feedback de builders",
+    duration: "5 min",
+    title: "Built a mobile-first finance beta for people with inconsistent income, looking for real usage feedback",
+    body:
+      "I am testing HoySi, a mobile-first finance beta for people whose money comes in parts instead of on a fixed paycheck. The goal is not accounting software. The goal is helping someone know what they can safely move today, what should stay protected, and what to collect first. I am looking for real testers plus 1 useful feedback note after trying it: {link}",
+  },
+  {
+    label: "Founder feedback",
+    source: "indiehackers",
+    channel: "Carril secundario",
+    duration: "3 a 5 min",
+    title: "Would love feedback on positioning and distribution for a beta aimed at variable-income users",
+    body:
+      "I am validating HoySi, a simple money flow aimed at people with variable income, WhatsApp sales, and mixed home/business cash. I am not looking for massive growth yet. I want honest feedback on positioning, channel fit, and whether the flow makes sense without explanation. If you are a founder or builder, this is the current beta: {link}",
+  },
+];
 let activeToken = queryToken || savedToken;
 let autoLoadTimer = 0;
 let boardRows = readBoardRows();
@@ -99,6 +146,7 @@ if (opsSeedBoardButton) {
 
 renderBoard();
 renderChannelLinks();
+renderCampaignKit();
 loadOpsData({ force: true });
 
 function syncTokenFromInput({ shouldLoad = false, force = false } = {}) {
@@ -201,38 +249,14 @@ function renderChannelLinks() {
     return;
   }
 
-  const base = window.location.origin;
-  const links = [
-    {
-      label: "WhatsApp",
-      source: "whatsapp",
-      note: "Tu canal principal para gente cercana o referida.",
-    },
-    {
-      label: "Reddit alpha",
-      source: "reddit-alpha",
-      note: "Para builders y testers, no como usuario ideal principal.",
-    },
-    {
-      label: "TestMyApp",
-      source: "reddit-testmyapp",
-      note: "Sirve para prueba rapida y devolucion de feedback.",
-    },
-    {
-      label: "Indie Hackers",
-      source: "indiehackers",
-      note: "Carril secundario para founders y distribucion.",
-    },
-  ];
-
-  channelLinks.innerHTML = links
+  channelLinks.innerHTML = CAMPAIGN_CONFIG
     .map((item) => {
-      const url = `${base}/launch.html?source=${encodeURIComponent(item.source)}`;
+      const url = buildCampaignLink(item.source);
       return `
         <article class="ops-link-card">
           <div>
             <strong>${escapeHtml(item.label)}</strong>
-            <p>${escapeHtml(item.note)}</p>
+            <p>${escapeHtml(item.channel)}</p>
             <code>${escapeHtml(url)}</code>
           </div>
           <button class="launch-button" type="button" data-copy-link="${escapeHtml(url)}">Copiar</button>
@@ -249,6 +273,55 @@ function renderChannelLinks() {
         setOpsStatus("Link copiado.");
       } catch (error) {
         setOpsStatus("No pude copiar el link. Pero ya lo ves arriba.");
+      }
+    });
+  });
+}
+
+function renderCampaignKit() {
+  if (!campaignKit) {
+    return;
+  }
+
+  campaignKit.innerHTML = CAMPAIGN_CONFIG.map((item) => {
+    const link = buildCampaignLink(item.source);
+    const copyBody = item.body.replace("{link}", link);
+    const copyFull = item.title ? `${item.title}\n\n${copyBody}` : copyBody;
+    return `
+      <article class="ops-campaign-card">
+        <div class="ops-entry-top">
+          <strong>${escapeHtml(item.label)}</strong>
+          <span>${escapeHtml(item.duration)}</span>
+        </div>
+        <p class="ops-inline-meta">${escapeHtml(item.channel)}</p>
+        ${item.title ? `<p><strong>Titulo:</strong> ${escapeHtml(item.title)}</p>` : ""}
+        <p>${escapeHtml(copyBody)}</p>
+        <div class="ops-campaign-actions">
+          <button class="launch-button" type="button" data-copy-message="${escapeHtml(copyBody)}">Copiar mensaje</button>
+          <button class="launch-button ghost" type="button" data-copy-full="${escapeHtml(copyFull)}">Copiar post completo</button>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  campaignKit.querySelectorAll("[data-copy-message]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(button.getAttribute("data-copy-message") || "");
+        setOpsStatus("Mensaje copiado.");
+      } catch (error) {
+        setOpsStatus("No pude copiar el mensaje.");
+      }
+    });
+  });
+
+  campaignKit.querySelectorAll("[data-copy-full]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(button.getAttribute("data-copy-full") || "");
+        setOpsStatus("Post completo copiado.");
+      } catch (error) {
+        setOpsStatus("No pude copiar el post.");
       }
     });
   });
@@ -475,7 +548,7 @@ function buildSeedRows() {
       profile: "Founder para feedback de distribucion",
       status: "nuevo",
       firstContactAt: today,
-      entered: "no entra",
+      entered: "no entro",
       sentFeedback: "no",
       quality: "media",
     },
@@ -535,6 +608,10 @@ function setOpsStatus(message) {
 
   opsStatus.textContent = message;
   opsStatus.classList.add("is-visible");
+}
+
+function buildCampaignLink(source) {
+  return `${window.location.origin}/launch.html?source=${encodeURIComponent(source)}`;
 }
 
 function formatDate(value) {

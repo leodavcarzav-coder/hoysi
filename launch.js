@@ -43,6 +43,12 @@ const previewTabs = Array.from(document.querySelectorAll("[data-preview-key]"));
 const previewShots = Array.from(document.querySelectorAll("[data-preview-panel]"));
 const trackedLinks = Array.from(document.querySelectorAll("[data-track-link]"));
 const supportsHover = window.matchMedia("(hover: hover)").matches;
+const shareWhatsAppLink = document.querySelector("[data-share-whatsapp]");
+const copyInviteButton = document.querySelector("[data-copy-invite]");
+const shareCopyText = document.getElementById("share-copy-text");
+
+const referralCopy =
+  "Si vendes por WhatsApp, cobras por partes o mezclas casa y negocio, abre HoySi 5 minutos con tu realidad y dime que no entendiste o que te faltaria:";
 
 let activePreview = "home";
 let acquisitionSource = resolveAcquisitionSource();
@@ -55,6 +61,7 @@ async function initLaunch() {
   hydrateTrackedLinks();
   wireWaitlistForm();
   wirePreviewTabs();
+  wireReferralShare();
   activatePreview(activePreview);
 }
 
@@ -194,6 +201,30 @@ function wirePreviewTabs() {
     tab.addEventListener("focus", () => activatePreview(key));
     tab.addEventListener("click", () => activatePreview(key));
   });
+}
+
+function wireReferralShare() {
+  const referralLink = appendSourceToPath("/launch.html", "referral-share");
+  const message = `${referralCopy} ${window.location.origin}${referralLink}`;
+
+  if (shareCopyText) {
+    shareCopyText.textContent = message;
+  }
+
+  if (shareWhatsAppLink) {
+    shareWhatsAppLink.href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  }
+
+  if (copyInviteButton) {
+    copyInviteButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(message);
+        showWaitlistFeedback("Invitacion copiada. Puedes pegarla donde quieras.", "success");
+      } catch (error) {
+        showWaitlistFeedback("No pude copiar la invitacion ahora mismo.", "error");
+      }
+    });
+  }
 }
 
 function activatePreview(key) {
