@@ -39,6 +39,7 @@ const waitlistForm = document.getElementById("waitlist-form");
 const waitlistFeedback = document.getElementById("waitlist-feedback");
 const previewTabs = Array.from(document.querySelectorAll("[data-preview-key]"));
 const previewShots = Array.from(document.querySelectorAll("[data-preview-panel]"));
+const supportsHover = window.matchMedia("(hover: hover)").matches;
 
 let activePreview = "home";
 
@@ -119,7 +120,7 @@ function wireWaitlistForm() {
     const originalText = submitButton?.textContent || "Guardar correo";
 
     if (!payload.email) {
-      showWaitlistFeedback("Necesito tu correo para guardarlo.");
+      showWaitlistFeedback("Necesito tu correo para guardarlo.", "error");
       return;
     }
 
@@ -145,9 +146,10 @@ function wireWaitlistForm() {
       waitlistForm.reset();
       showWaitlistFeedback(
         result?.message || "Correo guardado. Mientras tanto, puedes entrar a la app cuando quieras.",
+        "success",
       );
     } catch (error) {
-      showWaitlistFeedback(error?.message || "No pude guardar tu correo ahora mismo.");
+      showWaitlistFeedback(error?.message || "No pude guardar tu correo ahora mismo.", "error");
     } finally {
       if (submitButton) {
         submitButton.disabled = false;
@@ -168,7 +170,9 @@ function wirePreviewTabs() {
       return;
     }
 
-    tab.addEventListener("mouseenter", () => activatePreview(key));
+    if (supportsHover) {
+      tab.addEventListener("mouseenter", () => activatePreview(key));
+    }
     tab.addEventListener("focus", () => activatePreview(key));
     tab.addEventListener("click", () => activatePreview(key));
   });
@@ -192,13 +196,15 @@ function activatePreview(key) {
   setText("preview-body", current.body);
 }
 
-function showWaitlistFeedback(message) {
+function showWaitlistFeedback(message, tone) {
   if (!waitlistFeedback) {
     return;
   }
 
   waitlistFeedback.textContent = message;
-  waitlistFeedback.classList.add("is-visible");
+  waitlistFeedback.classList.toggle("is-visible", Boolean(message));
+  waitlistFeedback.classList.toggle("is-error", tone === "error");
+  waitlistFeedback.classList.toggle("is-success", tone !== "error");
 }
 
 function setText(id, value) {

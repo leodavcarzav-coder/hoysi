@@ -20,8 +20,10 @@ if (feedbackForm) {
     const submitButton = feedbackForm.querySelector("button[type='submit']");
     const originalText = submitButton?.textContent || "Enviar feedback";
 
+    setFeedbackStatus("", "success");
+
     if (!payload.message && !payload.suggestion) {
-      setFeedbackStatus("Necesito que nos cuentes que paso, o que le agregarias y por que.");
+      setFeedbackStatus("Necesito que nos cuentes que paso, o que le agregarias y por que.", "error");
       return;
     }
 
@@ -45,23 +47,37 @@ if (feedbackForm) {
       }
 
       feedbackForm.reset();
-      setFeedbackStatus(result?.message || "Tu feedback ya quedo guardado.");
-    } catch (error) {
-      setFeedbackStatus(error?.message || "No pude guardar tu feedback ahora mismo.");
-    } finally {
+      setFeedbackStatus(
+        result?.message || "Gracias. Tu feedback ya quedo guardado y lo recibimos para revisar esta beta.",
+        "success",
+      );
       if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = originalText;
+        submitButton.textContent = "Enviado";
       }
+    } catch (error) {
+      setFeedbackStatus(error?.message || "No pude guardar tu feedback ahora mismo.", "error");
+    } finally {
+      window.setTimeout(() => {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = originalText;
+        }
+      }, 1200);
     }
   });
 }
 
-function setFeedbackStatus(message) {
+function setFeedbackStatus(message, tone) {
   if (!feedbackStatus) {
     return;
   }
 
   feedbackStatus.textContent = message;
-  feedbackStatus.classList.add("is-visible");
+  feedbackStatus.classList.toggle("is-visible", Boolean(message));
+  feedbackStatus.classList.toggle("is-error", tone === "error");
+  feedbackStatus.classList.toggle("is-success", tone !== "error");
+
+  if (message) {
+    feedbackStatus.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
 }
