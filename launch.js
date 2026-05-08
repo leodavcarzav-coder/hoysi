@@ -1,20 +1,33 @@
+const previews = [
+  {
+    key: "home",
+    title: "Hoy",
+    body: "La cifra central, tus siguientes movimientos y lo que no conviene tocar hoy.",
+  },
+  {
+    key: "lumi",
+    title: "Lumi",
+    body: "Una capa simple para preguntar con tus palabras y aterrizar decisiones sin pena.",
+  },
+  {
+    key: "protect",
+    title: "Apartados",
+    body: "Pagos y apartados visibles para que no te sorprenda lo que ya tenia destino.",
+  },
+];
+
 let publicConfig = {
   appBaseUrl: "",
   contactEmail: "hola@hoysi.app",
-  betaMode: true,
   billingEnabled: false,
   beta: {
-    applyPath: "/api/testers/apply",
+    waitlistPath: "/api/waitlist",
     feedbackPath: "/feedback.html",
     guidePath: "/tester-guide.html",
     applyOpen: true,
   },
   release: {
-    stage: "open",
-    stageLabel: "Beta oficial abierta",
-    publicReady: false,
-    shareUrl: "",
-    appUrl: "/",
+    stageLabel: "Beta abierta",
   },
   lumi: {
     mode: "local-fallback",
@@ -22,15 +35,21 @@ let publicConfig = {
   },
 };
 
-const betaForm = document.getElementById("beta-form");
-const betaFeedback = document.getElementById("beta-feedback");
+const waitlistForm = document.getElementById("waitlist-form");
+const waitlistFeedback = document.getElementById("waitlist-feedback");
+const previewTabs = Array.from(document.querySelectorAll("[data-preview-key]"));
+const previewShots = Array.from(document.querySelectorAll("[data-preview-panel]"));
+
+let activePreview = "home";
 
 initLaunch();
 
 async function initLaunch() {
   await loadPublicConfig();
-  hydrateReleaseState();
-  wireBetaForm();
+  hydrateLaunchMeta();
+  wireWaitlistForm();
+  wirePreviewTabs();
+  activatePreview(activePreview);
 }
 
 async function loadPublicConfig() {
@@ -66,39 +85,41 @@ async function loadPublicConfig() {
   }
 }
 
-function wireBetaForm() {
-  if (!betaForm) {
+function hydrateLaunchMeta() {
+  setText("beta-stage-inline", publicConfig.release.stageLabel || "Beta abierta");
+  setText(
+    "beta-lumi-inline",
+    publicConfig.lumi.mode === "openai" ? "Lumi con IA real" : "Lumi en beta",
+  );
+
+  const contactEmail = publicConfig.contactEmail || "hola@hoysi.app";
+  const contactLink = document.getElementById("beta-contact-inline");
+  if (contactLink) {
+    contactLink.href = `mailto:${contactEmail}`;
+    contactLink.textContent = contactEmail;
+  }
+}
+
+function wireWaitlistForm() {
+  if (!waitlistForm) {
     return;
   }
 
-  if (!publicConfig.beta.applyOpen) {
-    const submitButton = betaForm.querySelector("button[type='submit']");
-    if (submitButton) {
-      submitButton.disabled = true;
-      submitButton.textContent = "Postulaciones pausadas";
-    }
-    showFeedback("Las postulaciones estan pausadas por ahora. Puedes volver pronto o escribirnos.");
-    return;
-  }
-
-  betaForm.addEventListener("submit", async (event) => {
+  waitlistForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const formData = new FormData(betaForm);
+    const formData = new FormData(waitlistForm);
     const payload = {
-      name: String(formData.get("name") || "").trim(),
       email: String(formData.get("email") || "").trim(),
-      whatsapp: String(formData.get("whatsapp") || "").trim(),
-      profile: String(formData.get("profile") || "").trim(),
-      biggestPain: String(formData.get("biggestPain") || "").trim(),
-      source: "launch-beta",
+      source: "launch-beta-minimal",
+      intent: "updates",
     };
 
-    const submitButton = betaForm.querySelector("button[type='submit']");
-    const originalText = submitButton?.textContent || "Quiero entrar a la beta";
+    const submitButton = waitlistForm.querySelector("button[type='submit']");
+    const originalText = submitButton?.textContent || "Guardar correo";
 
     if (!payload.email) {
-      showFeedback("Necesito tu correo para postularte a la beta.");
+      showWaitlistFeedback("Necesito tu correo para guardarlo.");
       return;
     }
 
@@ -108,7 +129,7 @@ function wireBetaForm() {
     }
 
     try {
-      const response = await fetch(publicConfig.beta.applyPath || "/api/testers/apply", {
+      const response = await fetch(publicConfig.beta.waitlistPath || "/api/waitlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,13 +139,15 @@ function wireBetaForm() {
 
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(result?.error || "No pude guardarte en la beta.");
+        throw new Error(result?.error || "No pude guardar tu correo.");
       }
 
-      betaForm.reset();
-      showFeedback(result?.message || "Ya te guardamos para esta ronda beta.");
+      waitlistForm.reset();
+      showWaitlistFeedback(
+        result?.message || "Correo guardado. Mientras tanto, puedes entrar a la app cuando quieras.",
+      );
     } catch (error) {
-      showFeedback(error?.message || "No pude guardarte ahora mismo.");
+      showWaitlistFeedback(error?.message || "No pude guardar tu correo ahora mismo.");
     } finally {
       if (submitButton) {
         submitButton.disabled = false;
@@ -134,36 +157,48 @@ function wireBetaForm() {
   });
 }
 
-function hydrateReleaseState() {
-  setText("beta-stage-value", publicConfig.release.stageLabel || "Beta oficial abierta");
-  setText(
-    "beta-cost-value",
-    publicConfig.billingEnabled ? "Cobro opcional listo si activas Pro" : "Sin cobro en esta ronda beta",
-  );
-  setText(
-    "beta-lumi-value",
-    publicConfig.lumi.mode === "openai"
-      ? `IA real con ${publicConfig.lumi.model || "OpenAI"}`
-      : "Lumi listo con fallback local",
-  );
-
-  const contactEmail = publicConfig.contactEmail || "hola@hoysi.app";
-  setText("beta-contact-value", contactEmail);
-
-  const contactLink = document.getElementById("beta-contact-link");
-  if (contactLink) {
-    contactLink.href = `mailto:${contactEmail}`;
-    contactLink.textContent = contactEmail;
-  }
-}
-
-function showFeedback(message) {
-  if (!betaFeedback) {
+function wirePreviewTabs() {
+  if (!previewTabs.length) {
     return;
   }
 
-  betaFeedback.textContent = message;
-  betaFeedback.classList.add("is-visible");
+  previewTabs.forEach((tab) => {
+    const key = tab.dataset.previewKey;
+    if (!key) {
+      return;
+    }
+
+    tab.addEventListener("mouseenter", () => activatePreview(key));
+    tab.addEventListener("focus", () => activatePreview(key));
+    tab.addEventListener("click", () => activatePreview(key));
+  });
+}
+
+function activatePreview(key) {
+  activePreview = previews.some((item) => item.key === key) ? key : "home";
+
+  previewTabs.forEach((tab) => {
+    const isActive = tab.dataset.previewKey === activePreview;
+    tab.classList.toggle("active-preview-tab", isActive);
+    tab.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
+
+  previewShots.forEach((shot) => {
+    shot.classList.toggle("active-preview-shot", shot.dataset.previewPanel === activePreview);
+  });
+
+  const current = previews.find((item) => item.key === activePreview) || previews[0];
+  setText("preview-title", current.title);
+  setText("preview-body", current.body);
+}
+
+function showWaitlistFeedback(message) {
+  if (!waitlistFeedback) {
+    return;
+  }
+
+  waitlistFeedback.textContent = message;
+  waitlistFeedback.classList.add("is-visible");
 }
 
 function setText(id, value) {

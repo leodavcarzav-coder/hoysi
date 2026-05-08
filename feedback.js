@@ -20,8 +20,8 @@ if (feedbackForm) {
     const submitButton = feedbackForm.querySelector("button[type='submit']");
     const originalText = submitButton?.textContent || "Enviar feedback";
 
-    if (!payload.message) {
-      setFeedbackStatus("Necesito que nos cuentes que paso o que te confundio.");
+    if (!payload.message && !payload.suggestion) {
+      setFeedbackStatus("Necesito que nos cuentes que paso, o que le agregarias y por que.");
       return;
     }
 

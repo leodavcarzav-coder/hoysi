@@ -181,7 +181,7 @@ async function handleWaitlist(request, response) {
 
   writeJson(response, 200, {
     ok: true,
-    message: "Te guardamos para la beta y te escribiremos cuando toque.",
+    message: "Correo guardado. Cuando movamos algo importante en la beta, te avisamos.",
   });
 }
 
@@ -248,8 +248,10 @@ async function handleFeedback(request, response) {
   const device = safeShortText(body?.device, "").slice(0, 80);
   const source = safeShortText(body?.source, "feedback-page").slice(0, 40);
 
-  if (!message) {
-    writeJson(response, 400, { error: "Necesito que nos cuentes que paso o que te confundio." });
+  if (!message && !suggestion) {
+    writeJson(response, 400, {
+      error: "Necesito que nos cuentes que paso, o que le agregarias y por que.",
+    });
     return;
   }
 
@@ -581,6 +583,7 @@ function buildPublicConfig(request) {
       yearlyUsd: YEARLY_PRICE_USD,
     },
     beta: {
+      waitlistPath: "/api/waitlist",
       applyPath: "/api/testers/apply",
       feedbackPath: "/feedback.html",
       guidePath: "/tester-guide.html",

@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#143b39" />
     <meta
       name="description"
-      content="Envia feedback de la beta de HoySi: errores, fricciones, dudas o recomendaciones."
+      content="Cuentanos que no entendiste, que le agregarias y por que despues de usar HoySi."
     />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,7 +16,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="launch.css" />
-    <title>HoySi Beta | Enviar feedback</title>
+    <title>HoySi | Enviar feedback</title>
   </head>
   <body>
     <div class="launch-bg launch-a"></div>
@@ -25,9 +25,8 @@
     <header class="launch-header">
       <a class="brand" href="/">HoySi</a>
       <nav class="launch-nav">
-        <a href="/launch.html#beta">Beta</a>
-        <a href="tester-guide.html">Guia tester</a>
         <a href="/">Abrir app</a>
+        <a href="/launch.html">Volver</a>
         <a href="privacy.html">Privacidad</a>
       </nav>
     </header>
@@ -35,25 +34,22 @@
     <main class="launch-main">
       <section class="section-shell legal-shell">
         <div class="section-copy">
-          <p class="launch-eyebrow">Feedback de beta</p>
-          <h2>Lo que mas nos ayuda ahora es feedback concreto.</h2>
+          <p class="launch-eyebrow">Despues de usarla</p>
+          <h2>Que te confundio o que le agregarias?</h2>
           <p>
-            Si algo te confundio, se rompio, te parecio pesado o te alivio de verdad, cuentanoslo
-            aqui. Eso vale mucho mas que una opinion generica.
+            Usa HoySi un rato y dejanos solo lo que de verdad mueve producto: que no entendiste,
+            que parte se sintio rara y que le agregarias con una razon clara.
           </p>
+        </div>
+
+        <div class="hero-actions compact-actions">
+          <a class="launch-button" href="/">Volver a la app</a>
+          <a class="launch-button ghost" href="/?demo=1">Ver demo</a>
         </div>
 
         <form class="waitlist-form beta-form-grid" id="feedback-form">
           <label class="waitlist-field">
-            <span>Nombre opcional</span>
-            <input name="name" type="text" maxlength="60" placeholder="Ej. Mari" />
-          </label>
-          <label class="waitlist-field">
-            <span>Correo opcional</span>
-            <input name="email" type="email" maxlength="160" placeholder="tu@correo.com" />
-          </label>
-          <label class="waitlist-field">
-            <span>Que parte fue</span>
+            <span>Que parte viste</span>
             <select name="area">
               <option value="general">General</option>
               <option value="home">Hoy</option>
@@ -66,35 +62,26 @@
             </select>
           </label>
           <label class="waitlist-field">
-            <span>Que tan grave fue</span>
-            <select name="severity">
-              <option value="baja">Baja</option>
-              <option value="media" selected>Media</option>
-              <option value="alta">Alta</option>
-            </select>
+            <span>Correo opcional</span>
+            <input name="email" type="email" maxlength="160" placeholder="tu@correo.com" />
           </label>
           <label class="waitlist-field full-span">
             <span>Que paso o que no entendiste</span>
             <textarea
               name="message"
-              rows="5"
+              rows="6"
               maxlength="600"
-              placeholder="Ej. Quise salir del modal y me quede atrapada. O no entendi que significaba usable"
-              required
+              placeholder="Ej. No entendi para que servia esta parte, o esperaba que pasara otra cosa."
             ></textarea>
           </label>
           <label class="waitlist-field full-span">
-            <span>Que te habria ayudado</span>
+            <span>Que le agregarias y por que</span>
             <textarea
               name="suggestion"
-              rows="4"
+              rows="5"
               maxlength="420"
-              placeholder="Ej. Un texto mas corto, un boton distinto, otra palabra, menos pasos..."
+              placeholder="Ej. Le agregaria una alerta mas clara aqui, porque ahora no me doy cuenta a tiempo."
             ></textarea>
-          </label>
-          <label class="waitlist-field full-span">
-            <span>Dispositivo opcional</span>
-            <input name="device" type="text" maxlength="80" placeholder="Ej. Android Samsung A15" />
           </label>
           <button class="launch-button primary" type="submit">Enviar feedback</button>
         </form>
@@ -104,12 +91,12 @@
 
     <footer class="launch-footer">
       <div>
-        <strong>HoySi Beta</strong>
-        <p>Gracias por ayudarnos a pulir el producto antes del lanzamiento real.</p>
+        <strong>HoySi</strong>
+        <p>Lo mas util ahora es entender que falta y por que te haria mas facil volver.</p>
       </div>
       <div class="footer-links">
-        <a href="/launch.html#beta">Volver a beta</a>
-        <a href="tester-guide.html">Guia tester</a>
+        <a href="/">Abrir app</a>
+        <a href="/launch.html">Volver a la beta</a>
         <a href="privacy.html">Privacidad</a>
       </div>
     </footer>
